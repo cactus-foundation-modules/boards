@@ -10,8 +10,6 @@ const TABS = [
   { label: 'Moderation', segment: 'moderation', manageOnly: false, adminOnly: false },
   { label: 'Moderators', segment: 'moderators', manageOnly: false, adminOnly: true },
   { label: 'Analytics', segment: 'analytics', manageOnly: false, adminOnly: false },
-  { label: 'Import', segment: 'import', manageOnly: true, adminOnly: false },
-  { label: 'Settings', segment: 'settings', manageOnly: true, adminOnly: false },
 ]
 
 type Props = { canManage: boolean; isAdmin: boolean }

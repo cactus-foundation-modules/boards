@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { TabStrip } from '@/components/admin/TabStrip'
 
 type Category = { id: string; title: string; position: number }
 type Board = { id: string; title: string; slug: string; category_id: string | null; visibility: string; is_locked: boolean; noindex: boolean }
@@ -112,11 +113,9 @@ export default function StructureScreen() {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-        {SUB_TABS.map((t) => (
-          <button key={t} className={`btn btn-sm ${tab === t ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab(t)}>{t}</button>
-        ))}
-      </div>
+      <TabStrip
+        items={SUB_TABS.map((t) => ({ key: t, label: t, active: tab === t, onClick: () => setTab(t) }))}
+      />
 
       {tab === 'Categories' && (
         <div>

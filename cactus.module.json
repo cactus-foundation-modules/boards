@@ -1,12 +1,42 @@
 {
   "name": "boards",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
   "permissions": ["boards.access", "boards.manage"],
+  "navGroupLabel": "Boards",
   "navEntries": [
-    { "label": "Boards", "path": "/m/boards/threads", "icon": "<path d=\"M4 4h16v12H8l-4 4z\"/><path d=\"M8 9h8M8 12h5\"/>", "permission": "boards.access" }
+    {
+      "label": "Threads",
+      "path": "/m/boards/threads",
+      "icon": "<path d=\"M4 4h16v12H8l-4 4z\"/><path d=\"M8 9h8M8 12h5\"/>",
+      "permission": "boards.access"
+    },
+    {
+      "label": "Structure",
+      "path": "/m/boards/structure",
+      "icon": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"/>",
+      "permission": "boards.access"
+    },
+    {
+      "label": "Moderation",
+      "path": "/m/boards/moderation",
+      "icon": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z\"/>",
+      "permission": "boards.access"
+    },
+    {
+      "label": "Moderators",
+      "path": "/m/boards/moderators",
+      "icon": "<path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>",
+      "permission": "boards.access"
+    },
+    {
+      "label": "Analytics",
+      "path": "/m/boards/analytics",
+      "icon": "<path d=\"M18 20V10\"/><path d=\"M12 20V4\"/><path d=\"M6 20v-6\"/>",
+      "permission": "boards.access"
+    }
   ],
   "requiredEnvVars": [],
   "cookieCategories": ["functional"],
@@ -27,7 +57,15 @@
     { "path": "/api/m/boards/cron/digest", "schedule": "0 7 * * *" }
   ],
   "puckBlocks": [],
-  "settingsTabs": [],
+  "settingsTabs": [
+    {
+      "id": "boards",
+      "label": "Boards",
+      "permission": "boards.manage",
+      "import": "./components/admin/BoardsSettingsTab",
+      "component": "BoardsSettingsTab"
+    }
+  ],
   "extensionPoints": [
     {
       "point": "core.admin-dashboard-widgets",

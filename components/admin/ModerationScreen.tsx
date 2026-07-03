@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { TabStrip } from '@/components/admin/TabStrip'
 
 type QueueItem = { id: string; item_type: string; item_id: string; reason: string; title: string | null; created_at: string }
 type Report = { id: string; item_type: string; item_id: string; reason: string; created_at: string }
@@ -74,11 +75,9 @@ export default function ModerationScreen({ canBan }: { canBan: boolean }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-        {SUB_TABS.filter((t) => canBan || (t !== 'Bans' && t !== 'IP Bans')).map((t) => (
-          <button key={t} className={`btn btn-sm ${tab === t ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab(t)}>{t}</button>
-        ))}
-      </div>
+      <TabStrip
+        items={SUB_TABS.filter((t) => canBan || (t !== 'Bans' && t !== 'IP Bans')).map((t) => ({ key: t, label: t, active: tab === t, onClick: () => setTab(t) }))}
+      />
 
       {tab === 'Queue' && (
         <table className="table">
