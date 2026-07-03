@@ -1,0 +1,7 @@
+{
+  "name": "cactus-module-boards",
+  "version": "0.1.0",
+  "description": "Boards module for Cactus",
+  "license": "MIT",
+  "private": true
+}

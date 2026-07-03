@@ -1,0 +1,41 @@
+{
+  "name": "boards",
+  "version": "0.1.0",
+  "tablePrefix": "brd_",
+  "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
+  "publicBasePath": "boards",
+  "permissions": ["boards.access", "boards.manage"],
+  "navEntries": [
+    { "label": "Boards", "path": "/m/boards/threads", "icon": "<path d=\"M4 4h16v12H8l-4 4z\"/><path d=\"M8 9h8M8 12h5\"/>", "permission": "boards.access" }
+  ],
+  "requiredEnvVars": [],
+  "cookieCategories": ["functional"],
+  "teardown": [
+    "brd_thread_tags", "brd_thread_views", "brd_post_reactions",
+    "brd_poll_votes", "brd_poll_options", "brd_polls",
+    "brd_post_revisions", "brd_reports", "brd_moderation_log",
+    "brd_moderation_queue", "brd_read_state", "brd_bookmarks",
+    "brd_drafts", "brd_posts", "brd_thread_subscriptions",
+    "brd_board_subscriptions", "brd_threads", "brd_tags",
+    "brd_sub_boards", "brd_boards", "brd_categories",
+    "brd_moderator_assignments",
+    "brd_bans", "brd_ip_bans", "brd_notification_prefs",
+    "brd_user_profiles", "brd_thread_templates", "brd_import_jobs",
+    "brd_settings"
+  ],
+  "cronJobs": [
+    { "path": "/api/m/boards/cron/digest", "schedule": "0 7 * * *" }
+  ],
+  "puckBlocks": [],
+  "settingsTabs": [],
+  "extensionPoints": [
+    {
+      "point": "core.admin-dashboard-widgets",
+      "id": "boards-summary",
+      "permission": "boards.access",
+      "import": "./components/admin/DashboardWidget",
+      "component": "boardsDashboardWidget"
+    }
+  ],
+  "requiresModules": []
+}
