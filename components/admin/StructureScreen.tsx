@@ -13,6 +13,34 @@ const SUB_TABS = ['Categories', 'Boards', 'Sub-boards', 'Tags', 'Templates'] as 
 
 const inputStyle = { padding: '0.375rem 0.625rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)' }
 
+function RenameField({ value, onSave }: { value: string; onSave: (value: string) => void }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(value)
+
+  if (!editing) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <span>{value}</span>
+        <button className="btn btn-secondary btn-sm" onClick={() => { setDraft(value); setEditing(true) }}>Rename</button>
+      </div>
+    )
+  }
+
+  function save() {
+    const v = draft.trim()
+    if (v && v !== value) onSave(v)
+    setEditing(false)
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <input style={inputStyle} value={draft} onChange={(e) => setDraft(e.target.value)} autoFocus />
+      <button className="btn btn-primary btn-sm" onClick={save}>Save</button>
+      <button className="btn btn-secondary btn-sm" onClick={() => setEditing(false)}>Cancel</button>
+    </div>
+  )
+}
+
 export default function StructureScreen() {
   const [tab, setTab] = useState<typeof SUB_TABS[number]>('Boards')
   const [categories, setCategories] = useState<Category[]>([])
@@ -153,11 +181,7 @@ export default function StructureScreen() {
               {categories.map((c) => (
                 <tr key={c.id}>
                   <td>
-                    <input
-                      style={inputStyle}
-                      defaultValue={c.title}
-                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== c.title) renameCategory(c.id, v) }}
-                    />
+                    <RenameField value={c.title} onSave={(v) => renameCategory(c.id, v)} />
                   </td>
                   <td><button className="btn btn-danger btn-sm" onClick={() => deleteCategory(c.id)}>Delete</button></td>
                 </tr>
@@ -183,11 +207,7 @@ export default function StructureScreen() {
               {boards.map((b) => (
                 <tr key={b.id}>
                   <td>
-                    <input
-                      style={inputStyle}
-                      defaultValue={b.title}
-                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== b.title) renameBoard(b.id, v) }}
-                    />
+                    <RenameField value={b.title} onSave={(v) => renameBoard(b.id, v)} />
                   </td>
                   <td>
                     <select style={inputStyle} value={b.category_id ?? ''} onChange={(e) => setBoardCategory(b.id, e.target.value)}>
@@ -228,11 +248,7 @@ export default function StructureScreen() {
               {subBoards.map((sb) => (
                 <tr key={sb.id}>
                   <td>
-                    <input
-                      style={inputStyle}
-                      defaultValue={sb.title}
-                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== sb.title) renameSubBoard(sb.id, v) }}
-                    />
+                    <RenameField value={sb.title} onSave={(v) => renameSubBoard(sb.id, v)} />
                   </td>
                   <td>
                     <select style={inputStyle} value={sb.board_id} onChange={(e) => setSubBoardParent(sb.id, e.target.value)}>
@@ -259,11 +275,7 @@ export default function StructureScreen() {
               {tags.map((t) => (
                 <tr key={t.id}>
                   <td>
-                    <input
-                      style={inputStyle}
-                      defaultValue={t.name}
-                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== t.name) renameTag(t.id, v) }}
-                    />
+                    <RenameField value={t.name} onSave={(v) => renameTag(t.id, v)} />
                   </td>
                   <td><button className="btn btn-danger btn-sm" onClick={() => deleteTag(t.id)}>Delete</button></td>
                 </tr>
