@@ -13,6 +13,7 @@ const PatchBody = z.object({
   description: z.string().max(2000).nullable().optional(),
   isLocked: z.boolean().optional(),
   position: z.number().int().optional(),
+  boardId: z.string().optional(),
 })
 
 export async function PATCH(request: NextRequest, { params }: Params) {
@@ -25,11 +26,13 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid input')
   const b = parsed.data
 
+  const [existing] = await prisma.$queryRaw<Array<{ board_id: string; title: string }>>`SELECT "board_id", "title" FROM "brd_sub_boards" WHERE "id" = ${id}`
+  if (!existing) return errorResponse('Sub-board not found', 404)
+
   let slug: string | undefined
-  if (b.title) {
-    const [existing] = await prisma.$queryRaw<Array<{ board_id: string }>>`SELECT "board_id" FROM "brd_sub_boards" WHERE "id" = ${id}`
-    if (!existing) return errorResponse('Sub-board not found', 404)
-    slug = await ensureUniqueSubBoardSlug(existing.board_id, slugifyTitle(b.title), id)
+  if (b.title || b.boardId) {
+    const targetBoardId = b.boardId ?? existing.board_id
+    slug = await ensureUniqueSubBoardSlug(targetBoardId, slugifyTitle(b.title ?? existing.title), id)
   }
 
   const [subBoard] = await prisma.$queryRaw<Record<string, unknown>[]>`
@@ -39,6 +42,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       "description" = CASE WHEN ${b.description !== undefined} THEN ${b.description ?? null} ELSE "description" END,
       "is_locked" = COALESCE(${b.isLocked}, "is_locked"),
       "position" = COALESCE(${b.position}, "position"),
+      "board_id" = COALESCE(${b.boardId}, "board_id"),
       "updated_at" = CURRENT_TIMESTAMP
     WHERE "id" = ${id}
     RETURNING *

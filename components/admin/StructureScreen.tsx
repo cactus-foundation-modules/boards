@@ -54,6 +54,10 @@ export default function StructureScreen() {
     setNewCategoryTitle('')
     loadAll()
   }
+  async function renameCategory(id: string, title: string) {
+    await fetch(`/api/m/boards/admin/categories/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) })
+    loadAll()
+  }
   async function deleteCategory(id: string) {
     await fetch(`/api/m/boards/admin/categories/${id}`, { method: 'DELETE' })
     loadAll()
@@ -82,11 +86,27 @@ export default function StructureScreen() {
     await fetch(`/api/m/boards/admin/boards/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ visibility }) })
     loadAll()
   }
+  async function renameBoard(id: string, title: string) {
+    await fetch(`/api/m/boards/admin/boards/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) })
+    loadAll()
+  }
+  async function setBoardCategory(id: string, categoryId: string) {
+    await fetch(`/api/m/boards/admin/boards/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ categoryId: categoryId || null }) })
+    loadAll()
+  }
 
   async function addSubBoard() {
     if (!newSubBoardTitle || !newSubBoardParent) return
     await fetch('/api/m/boards/admin/sub-boards', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: newSubBoardTitle, boardId: newSubBoardParent }) })
     setNewSubBoardTitle('')
+    loadAll()
+  }
+  async function renameSubBoard(id: string, title: string) {
+    await fetch(`/api/m/boards/admin/sub-boards/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) })
+    loadAll()
+  }
+  async function setSubBoardParent(id: string, boardId: string) {
+    await fetch(`/api/m/boards/admin/sub-boards/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ boardId }) })
     loadAll()
   }
   async function deleteSubBoard(id: string) {
@@ -98,6 +118,10 @@ export default function StructureScreen() {
     if (!newTagName) return
     await fetch('/api/m/boards/admin/tags', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: newTagName }) })
     setNewTagName('')
+    loadAll()
+  }
+  async function renameTag(id: string, name: string) {
+    await fetch(`/api/m/boards/admin/tags/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) })
     loadAll()
   }
   async function deleteTag(id: string) {
@@ -127,7 +151,16 @@ export default function StructureScreen() {
             <thead><tr><th>Title</th><th></th></tr></thead>
             <tbody>
               {categories.map((c) => (
-                <tr key={c.id}><td>{c.title}</td><td><button className="btn btn-danger btn-sm" onClick={() => deleteCategory(c.id)}>Delete</button></td></tr>
+                <tr key={c.id}>
+                  <td>
+                    <input
+                      style={inputStyle}
+                      defaultValue={c.title}
+                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== c.title) renameCategory(c.id, v) }}
+                    />
+                  </td>
+                  <td><button className="btn btn-danger btn-sm" onClick={() => deleteCategory(c.id)}>Delete</button></td>
+                </tr>
               ))}
             </tbody>
           </table>
@@ -145,11 +178,23 @@ export default function StructureScreen() {
             <button className="btn btn-primary btn-sm" onClick={addBoard}>Add</button>
           </div>
           <table className="table">
-            <thead><tr><th>Title</th><th>Visibility</th><th>Locked</th><th>Hide from search</th><th></th></tr></thead>
+            <thead><tr><th>Title</th><th>Category</th><th>Visibility</th><th>Locked</th><th>Hide from search</th><th></th></tr></thead>
             <tbody>
               {boards.map((b) => (
                 <tr key={b.id}>
-                  <td>{b.title}</td>
+                  <td>
+                    <input
+                      style={inputStyle}
+                      defaultValue={b.title}
+                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== b.title) renameBoard(b.id, v) }}
+                    />
+                  </td>
+                  <td>
+                    <select style={inputStyle} value={b.category_id ?? ''} onChange={(e) => setBoardCategory(b.id, e.target.value)}>
+                      <option value="">Uncategorised</option>
+                      {categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+                    </select>
+                  </td>
                   <td>
                     <select style={inputStyle} value={b.visibility} onChange={(e) => setBoardVisibility(b.id, e.target.value)}>
                       <option value="PUBLIC">Public</option>
@@ -182,8 +227,18 @@ export default function StructureScreen() {
             <tbody>
               {subBoards.map((sb) => (
                 <tr key={sb.id}>
-                  <td>{sb.title}</td>
-                  <td>{boards.find((b) => b.id === sb.board_id)?.title ?? '-'}</td>
+                  <td>
+                    <input
+                      style={inputStyle}
+                      defaultValue={sb.title}
+                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== sb.title) renameSubBoard(sb.id, v) }}
+                    />
+                  </td>
+                  <td>
+                    <select style={inputStyle} value={sb.board_id} onChange={(e) => setSubBoardParent(sb.id, e.target.value)}>
+                      {boards.map((b) => <option key={b.id} value={b.id}>{b.title}</option>)}
+                    </select>
+                  </td>
                   <td><button className="btn btn-danger btn-sm" onClick={() => deleteSubBoard(sb.id)}>Delete</button></td>
                 </tr>
               ))}
@@ -202,7 +257,16 @@ export default function StructureScreen() {
             <thead><tr><th>Name</th><th></th></tr></thead>
             <tbody>
               {tags.map((t) => (
-                <tr key={t.id}><td>{t.name}</td><td><button className="btn btn-danger btn-sm" onClick={() => deleteTag(t.id)}>Delete</button></td></tr>
+                <tr key={t.id}>
+                  <td>
+                    <input
+                      style={inputStyle}
+                      defaultValue={t.name}
+                      onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== t.name) renameTag(t.id, v) }}
+                    />
+                  </td>
+                  <td><button className="btn btn-danger btn-sm" onClick={() => deleteTag(t.id)}>Delete</button></td>
+                </tr>
               ))}
             </tbody>
           </table>
