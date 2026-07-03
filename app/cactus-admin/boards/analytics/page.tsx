@@ -1,5 +1,5 @@
 import { getSessionFromCookie } from '@/lib/auth/session'
-import { hasPermission, isAdmin } from '@/lib/permissions/check'
+import { hasPermission } from '@/lib/permissions/check'
 import BoardsNav from '@/modules/boards/components/admin/BoardsNav'
 import AnalyticsScreen from '@/modules/boards/components/admin/AnalyticsScreen'
 
@@ -16,7 +16,7 @@ export default async function BoardsAnalyticsPage() {
 
   return (
     <div>
-      <BoardsNav canManage={canManage} isAdmin={isAdmin(user)} />
+      <BoardsNav canManage={canManage} />
       <div className="page-header">
         <h1 className="page-title">Analytics</h1>
       </div>

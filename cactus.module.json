@@ -1,10 +1,10 @@
 {
   "name": "boards",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
-  "permissions": ["boards.access", "boards.manage"],
+  "permissions": ["boards.access", "boards.manage", "boards.moderate"],
   "navGroupLabel": "Boards",
   "navEntries": [
     {
@@ -26,12 +26,6 @@
       "permission": "boards.access"
     },
     {
-      "label": "Moderators",
-      "path": "/m/boards/moderators",
-      "icon": "<path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>",
-      "permission": "boards.access"
-    },
-    {
       "label": "Analytics",
       "path": "/m/boards/analytics",
       "icon": "<path d=\"M18 20V10\"/><path d=\"M12 20V4\"/><path d=\"M6 20v-6\"/>",
@@ -48,7 +42,6 @@
     "brd_drafts", "brd_posts", "brd_thread_subscriptions",
     "brd_board_subscriptions", "brd_threads", "brd_tags",
     "brd_sub_boards", "brd_boards", "brd_categories",
-    "brd_moderator_assignments",
     "brd_bans", "brd_ip_bans", "brd_notification_prefs",
     "brd_user_profiles", "brd_thread_templates", "brd_import_jobs",
     "brd_settings"

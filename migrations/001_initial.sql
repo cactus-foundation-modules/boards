@@ -331,24 +331,6 @@ CREATE TABLE IF NOT EXISTS "brd_user_profiles" (
 );
 
 -- ---------------------------------------------------------------------------
--- Moderator assignments (board-scoped moderators + Global Moderator flag)
--- ---------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS "brd_moderator_assignments" (
-    "id"          TEXT         NOT NULL DEFAULT gen_random_uuid()::text,
-    "user_id"     TEXT         NOT NULL,
-    -- NULL means Global Moderator
-    "board_id"    TEXT,
-    "assigned_by" TEXT,
-    "created_at"  TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "brd_moderator_assignments_pkey" PRIMARY KEY ("id"),
-    CONSTRAINT "brd_moderator_assignments_unique" UNIQUE ("user_id", "board_id"),
-    CONSTRAINT "brd_moderator_assignments_user_fk" FOREIGN KEY ("user_id") REFERENCES "User" ("id") ON DELETE CASCADE,
-    CONSTRAINT "brd_moderator_assignments_board_fk" FOREIGN KEY ("board_id") REFERENCES "brd_boards" ("id") ON DELETE CASCADE
-);
--- one global-moderator flag per user
-CREATE UNIQUE INDEX IF NOT EXISTS "brd_moderator_assignments_global_unique" ON "brd_moderator_assignments" ("user_id") WHERE "board_id" IS NULL;
-
--- ---------------------------------------------------------------------------
 -- Bans (forum-level sanctions; does not touch the core user's account/sessions)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "brd_bans" (

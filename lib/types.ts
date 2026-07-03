@@ -119,9 +119,7 @@ export type BoardsSettings = {
 
 export type BoardsAccess = {
   isAdminUser: boolean
-  isGlobalModerator: boolean
-  // boardId -> true for boards this user moderates
-  moderatedBoardIds: Set<string>
+  canModerate: boolean
 }
 
 export type BoardsUserProfile = {

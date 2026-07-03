@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, isAnyModerator } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { logModerationAction } from '@/modules/boards/lib/moderation'
 import { notifyUser } from '@/modules/boards/lib/notify'
 
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   const user = await getSessionFromCookie()
   if (!user) return errorResponse('Not authenticated', 401)
   const access = await getBoardsAccess(user)
-  if (!isAnyModerator(access)) return errorResponse('Forbidden', 403)
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const { id } = await params
   const parsed = Body.safeParse(await request.json())

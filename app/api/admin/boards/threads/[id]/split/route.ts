@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, canModerateBoard } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { getThreadById, getPostById, recomputeThreadCounts } from '@/modules/boards/lib/db'
 import { ensureUniqueThreadSlug, slugifyTitle } from '@/modules/boards/lib/slug'
 import { logModerationAction } from '@/modules/boards/lib/moderation'
@@ -26,9 +26,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   const targetBoardId = parsed.data.boardId ?? (thread.board_id as string)
 
   const access = await getBoardsAccess(user)
-  if (!canModerateBoard(access, thread.board_id as string) || !canModerateBoard(access, targetBoardId)) {
-    return errorResponse('Forbidden', 403)
-  }
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const fromPost = await getPostById(fromPostId)
   if (!fromPost || fromPost.thread_id !== id) return errorResponse('Post not found in this thread', 404)

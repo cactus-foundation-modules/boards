@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, canModerateBoard } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { getThreadById } from '@/modules/boards/lib/db'
 import { logModerationAction } from '@/modules/boards/lib/moderation'
 
@@ -23,9 +23,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid input')
 
   const access = await getBoardsAccess(user)
-  if (!canModerateBoard(access, thread.board_id as string) || !canModerateBoard(access, parsed.data.boardId)) {
-    return errorResponse('Forbidden', 403)
-  }
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const [updated] = await prisma.$queryRaw<Record<string, unknown>[]>`
     UPDATE "brd_threads" SET "board_id" = ${parsed.data.boardId}, "sub_board_id" = ${parsed.data.subBoardId ?? null}, "updated_at" = CURRENT_TIMESTAMP

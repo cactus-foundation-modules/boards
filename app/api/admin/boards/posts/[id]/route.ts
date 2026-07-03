@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, canModerateBoard } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { htmlToPostBody } from '@/modules/boards/lib/import/convert'
 import { recomputeThreadCounts } from '@/modules/boards/lib/db'
 import { logModerationAction } from '@/modules/boards/lib/moderation'
@@ -33,7 +33,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   if (!post) return errorResponse('Post not found', 404)
 
   const access = await getBoardsAccess(user)
-  if (!canModerateBoard(access, post.board_id as string)) return errorResponse('Forbidden', 403)
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const parsed = PatchBody.safeParse(await request.json())
   if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid input')
@@ -71,7 +71,7 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
   if (!post) return errorResponse('Post not found', 404)
 
   const access = await getBoardsAccess(user)
-  if (!canModerateBoard(access, post.board_id as string)) return errorResponse('Forbidden', 403)
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   // Moderator delete is a hard delete (author self-delete via the public API is a soft delete).
   await prisma.$executeRaw`DELETE FROM "brd_posts" WHERE "id" = ${id}`

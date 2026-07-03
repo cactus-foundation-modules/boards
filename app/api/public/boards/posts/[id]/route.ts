@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, canModerateBoard, withinEditWindow } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess, withinEditWindow } from '@/modules/boards/lib/permissions'
 import { getBoardsSettings } from '@/modules/boards/lib/settings'
 import { renderProseHtml } from '@/modules/boards/lib/prose'
 import { recomputeThreadCounts } from '@/modules/boards/lib/db'
@@ -30,7 +30,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   if (!post) return errorResponse('Post not found', 404)
 
   const access = await getBoardsAccess(user)
-  const isModerator = canModerateBoard(access, post.board_id as string)
+  const isModerator = access.canModerate
   const isAuthor = post.author_id === user.id
 
   if (!isModerator && !isAuthor) return errorResponse('Forbidden', 403)
@@ -70,7 +70,7 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
   if (!post) return errorResponse('Post not found', 404)
 
   const access = await getBoardsAccess(user)
-  const isModerator = canModerateBoard(access, post.board_id as string)
+  const isModerator = access.canModerate
   const isAuthor = post.author_id === user.id
   if (!isModerator && !isAuthor) return errorResponse('Forbidden', 403)
 

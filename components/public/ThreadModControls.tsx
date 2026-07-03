@@ -7,11 +7,10 @@ type Props = {
   isPinned: boolean
   isLocked: boolean
   isArchived: boolean
-  isGlobalModerator: boolean
   isGlobalAnnouncement: boolean
 }
 
-export default function ThreadModControls({ threadId, isPinned, isLocked, isArchived, isGlobalModerator, isGlobalAnnouncement }: Props) {
+export default function ThreadModControls({ threadId, isPinned, isLocked, isArchived, isGlobalAnnouncement }: Props) {
   const router = useRouter()
 
   async function action(path: string) {
@@ -30,9 +29,7 @@ export default function ThreadModControls({ threadId, isPinned, isLocked, isArch
       <button type="button" className="btn btn-ghost btn-sm" onClick={() => action('/pin')}>{isPinned ? 'Unpin' : 'Pin'}</button>
       <button type="button" className="btn btn-ghost btn-sm" onClick={() => action('/lock')}>{isLocked ? 'Unlock' : 'Lock'}</button>
       <button type="button" className="btn btn-ghost btn-sm" onClick={() => action('/archive')}>{isArchived ? 'Unarchive' : 'Archive'}</button>
-      {isGlobalModerator && (
-        <button type="button" className="btn btn-ghost btn-sm" onClick={() => action('/announce')}>{isGlobalAnnouncement ? 'Unannounce' : 'Announce'}</button>
-      )}
+      <button type="button" className="btn btn-ghost btn-sm" onClick={() => action('/announce')}>{isGlobalAnnouncement ? 'Unannounce' : 'Announce'}</button>
       <button type="button" className="btn btn-danger btn-sm" onClick={remove}>Delete</button>
     </div>
   )

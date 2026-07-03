@@ -12,7 +12,7 @@ type LogEntry = { id: string; actor_name: string; action: string; item_type: str
 const SUB_TABS = ['Queue', 'Reports', 'Bans', 'IP Bans', 'Log'] as const
 const inputStyle = { padding: '0.375rem 0.625rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)' }
 
-export default function ModerationScreen({ canBan }: { canBan: boolean }) {
+export default function ModerationScreen() {
   const [tab, setTab] = useState<typeof SUB_TABS[number]>('Queue')
   const [queue, setQueue] = useState<QueueItem[]>([])
   const [reports, setReports] = useState<Report[]>([])
@@ -28,8 +28,8 @@ export default function ModerationScreen({ canBan }: { canBan: boolean }) {
     const [q, r, b, ip, l] = await Promise.all([
       fetch('/api/m/boards/admin/moderation/queue').then((r) => r.json()),
       fetch('/api/m/boards/admin/reports').then((r) => r.json()),
-      canBan ? fetch('/api/m/boards/admin/bans').then((r) => r.json()) : Promise.resolve({ bans: [] }),
-      canBan ? fetch('/api/m/boards/admin/ip-bans').then((r) => r.json()) : Promise.resolve({ ipBans: [] }),
+      fetch('/api/m/boards/admin/bans').then((r) => r.json()),
+      fetch('/api/m/boards/admin/ip-bans').then((r) => r.json()),
       fetch('/api/m/boards/admin/moderation/log').then((r) => r.json()),
     ])
     setQueue(q.items ?? [])
@@ -37,7 +37,7 @@ export default function ModerationScreen({ canBan }: { canBan: boolean }) {
     setBans(b.bans ?? [])
     setIpBans(ip.ipBans ?? [])
     setLog(l.log ?? [])
-  }, [canBan])
+  }, [])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- delegating to async helper; all setState calls are after awaits
@@ -76,7 +76,7 @@ export default function ModerationScreen({ canBan }: { canBan: boolean }) {
   return (
     <div>
       <TabStrip
-        items={SUB_TABS.filter((t) => canBan || (t !== 'Bans' && t !== 'IP Bans')).map((t) => ({ key: t, label: t, active: tab === t, onClick: () => setTab(t) }))}
+        items={SUB_TABS.map((t) => ({ key: t, label: t, active: tab === t, onClick: () => setTab(t) }))}
       />
 
       {tab === 'Queue' && (
@@ -113,7 +113,7 @@ export default function ModerationScreen({ canBan }: { canBan: boolean }) {
         </table>
       )}
 
-      {tab === 'Bans' && canBan && (
+      {tab === 'Bans' && (
         <div>
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
             <input style={inputStyle} placeholder="User ID" value={newBanUserId} onChange={(e) => setNewBanUserId(e.target.value)} />
@@ -134,7 +134,7 @@ export default function ModerationScreen({ canBan }: { canBan: boolean }) {
         </div>
       )}
 
-      {tab === 'IP Bans' && canBan && (
+      {tab === 'IP Bans' && (
         <div>
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
             <input style={inputStyle} placeholder="IP address" value={newIpBan} onChange={(e) => setNewIpBan(e.target.value)} />

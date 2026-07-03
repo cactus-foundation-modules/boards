@@ -5,7 +5,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
 import { getSiteUrlOrNull } from '@/lib/config/env'
-import { getBoardsAccess, canModerateBoard } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { isBoardVisible } from '@/modules/boards/lib/visibility'
 import { getThreadBySlug, getBoardById } from '@/modules/boards/lib/db'
 import { getBoardsSettings } from '@/modules/boards/lib/settings'
@@ -40,7 +40,7 @@ export default async function ThreadPage({ params, searchParams }: Props) {
 
   const user = await getSessionFromCookie()
   const access = user ? await getBoardsAccess(user) : null
-  const isModerator = !!access && canModerateBoard(access, thread.board_id as string)
+  const isModerator = !!access?.canModerate
 
   if (!(await isBoardVisible(thread.board_id as string, !!user, access))) notFound()
   if ((thread.status === 'PENDING' || thread.status === 'HIDDEN' || thread.status === 'DELETED') && !isModerator) notFound()
@@ -150,7 +150,6 @@ export default async function ThreadPage({ params, searchParams }: Props) {
           isPinned={thread.is_pinned as boolean}
           isLocked={thread.is_locked as boolean}
           isArchived={thread.status === 'ARCHIVED'}
-          isGlobalModerator={!!access?.isGlobalModerator || !!access?.isAdminUser}
           isGlobalAnnouncement={thread.is_global_announcement as boolean}
         />
       )}

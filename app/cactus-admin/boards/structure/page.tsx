@@ -1,5 +1,5 @@
 import { getSessionFromCookie } from '@/lib/auth/session'
-import { hasPermission, isAdmin } from '@/lib/permissions/check'
+import { hasPermission } from '@/lib/permissions/check'
 import BoardsNav from '@/modules/boards/components/admin/BoardsNav'
 import StructureScreen from '@/modules/boards/components/admin/StructureScreen'
 
@@ -15,7 +15,7 @@ export default async function BoardsStructurePage() {
 
   return (
     <div>
-      <BoardsNav canManage={canManage} isAdmin={isAdmin(user)} />
+      <BoardsNav canManage={canManage} />
       <div className="page-header">
         <h1 className="page-title">Structure</h1>
       </div>

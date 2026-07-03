@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, isGlobalModeratorOrAdmin } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { getThreadById } from '@/modules/boards/lib/db'
 import { logModerationAction } from '@/modules/boards/lib/moderation'
 
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!user) return errorResponse('Not authenticated', 401)
 
   const access = await getBoardsAccess(user)
-  if (!isGlobalModeratorOrAdmin(access)) return errorResponse('Forbidden', 403)
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const { id } = await params
   const thread = await getThreadById(id)

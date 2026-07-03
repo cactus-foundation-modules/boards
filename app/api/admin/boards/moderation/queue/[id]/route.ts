@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, canModerateBoard } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { logModerationAction } from '@/modules/boards/lib/moderation'
 import { notifyUser } from '@/modules/boards/lib/notify'
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!boardId) return errorResponse('Item no longer exists', 404)
 
   const access = await getBoardsAccess(user)
-  if (!canModerateBoard(access, boardId)) return errorResponse('Forbidden', 403)
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const nextStatus = parsed.data.action === 'approve' ? 'PUBLISHED' : 'HIDDEN'
   const table = item.item_type === 'THREAD' ? 'brd_threads' : 'brd_posts'

@@ -5,21 +5,20 @@ import { useAdminPath } from '@/components/admin/AdminPathContext'
 import { TabStrip } from '@/components/admin/TabStrip'
 
 const TABS = [
-  { label: 'Threads', segment: 'threads', manageOnly: false, adminOnly: false },
-  { label: 'Structure', segment: 'structure', manageOnly: true, adminOnly: false },
-  { label: 'Moderation', segment: 'moderation', manageOnly: false, adminOnly: false },
-  { label: 'Moderators', segment: 'moderators', manageOnly: false, adminOnly: true },
-  { label: 'Analytics', segment: 'analytics', manageOnly: false, adminOnly: false },
+  { label: 'Threads', segment: 'threads', manageOnly: false },
+  { label: 'Structure', segment: 'structure', manageOnly: true },
+  { label: 'Moderation', segment: 'moderation', manageOnly: false },
+  { label: 'Analytics', segment: 'analytics', manageOnly: false },
 ]
 
-type Props = { canManage: boolean; isAdmin: boolean }
+type Props = { canManage: boolean }
 
-export default function BoardsNav({ canManage, isAdmin }: Props) {
+export default function BoardsNav({ canManage }: Props) {
   const pathname = usePathname()
   const adminPath = useAdminPath()
   const base = `/${adminPath}/m/boards`
 
-  const tabs = TABS.filter((t) => (!t.manageOnly || canManage) && (!t.adminOnly || isAdmin))
+  const tabs = TABS.filter((t) => !t.manageOnly || canManage)
 
   return (
     <TabStrip

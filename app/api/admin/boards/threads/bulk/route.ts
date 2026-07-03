@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { getBoardsAccess, canModerateBoard, isAnyModerator } from '@/modules/boards/lib/permissions'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { logModerationAction } from '@/modules/boards/lib/moderation'
 
 const Body = z.object({
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   const user = await getSessionFromCookie()
   if (!user) return errorResponse('Not authenticated', 401)
   const access = await getBoardsAccess(user)
-  if (!isAnyModerator(access)) return errorResponse('Forbidden', 403)
+  if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const parsed = Body.safeParse(await request.json())
   if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid input')
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
   for (const id of ids) {
     const thread = byId.get(id)
-    if (!thread || !canModerateBoard(access, thread.board_id) || (action === 'move' && !canModerateBoard(access, boardId!))) {
+    if (!thread) {
       skipped.push(id)
       continue
     }
