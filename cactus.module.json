@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
@@ -49,7 +49,21 @@
   "cronJobs": [
     { "path": "/api/m/boards/cron/digest", "schedule": "0 7 * * *" }
   ],
-  "puckBlocks": [],
+  "puckBlocks": [
+    { "type": "BoardHeader", "import": "./components/puck/BoardHeaderBlock", "component": "boardHeaderPuckComponent", "rscComponent": "boardHeaderPuckRscComponent", "layoutTypes": ["boardsCategory"] },
+    { "type": "SubBoardList", "import": "./components/puck/SubBoardListBlock", "component": "subBoardListPuckComponent", "rscComponent": "subBoardListPuckRscComponent", "layoutTypes": ["boardsCategory"] },
+    { "type": "ThreadList", "import": "./components/puck/ThreadListBlock", "component": "threadListPuckComponent", "rscComponent": "threadListPuckRscComponent", "layoutTypes": ["boardsCategory"] },
+    { "type": "ThreadHeader", "import": "./components/puck/ThreadHeaderBlock", "component": "threadHeaderPuckComponent", "rscComponent": "threadHeaderPuckRscComponent", "layoutTypes": ["boardsEntry"] },
+    { "type": "ThreadBody", "import": "./components/puck/ThreadBodyBlock", "component": "threadBodyPuckComponent", "rscComponent": "threadBodyPuckRscComponent", "layoutTypes": ["boardsEntry"] },
+    { "type": "ReplyList", "import": "./components/puck/ReplyListBlock", "component": "replyListPuckComponent", "rscComponent": "replyListPuckRscComponent", "layoutTypes": ["boardsEntry"] }
+  ],
+  "layoutTypes": {
+    "groupLabel": "Boards",
+    "types": [
+      { "key": "boardsCategory", "label": "Category", "starterImport": "./lib/starterLayouts", "starterExport": "boardsCategoryStarters" },
+      { "key": "boardsEntry", "label": "Entry", "starterImport": "./lib/starterLayouts", "starterExport": "boardsEntryStarters" }
+    ]
+  },
   "settingsTabs": [
     {
       "id": "boards",
