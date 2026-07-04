@@ -121,7 +121,7 @@ export default async function BoardsIndexPage({ searchParams }: Props) {
         const catBoards = boardsByCategory.get(c.id) ?? []
         if (catBoards.length === 0) return null
         return (
-          <div key={c.id} style={{ marginBottom: '1.5rem' }}>
+          <div key={c.id} id={`cat-${c.id}`} style={{ marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '1rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{c.title}</h2>
             {catBoards.map(renderBoard)}
           </div>

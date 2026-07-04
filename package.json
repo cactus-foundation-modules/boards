@@ -1,6 +1,6 @@
 {
   "name": "cactus-module-boards",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Boards module for Cactus",
   "license": "MIT",
   "private": true

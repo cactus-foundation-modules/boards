@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
@@ -66,6 +66,12 @@
       "permission": "boards.access",
       "import": "./components/admin/DashboardWidget",
       "component": "boardsDashboardWidget"
+    },
+    {
+      "point": "core.menu-entity-provider",
+      "id": "boards",
+      "import": "./lib/menu-entity-provider",
+      "component": "boardsMenuEntityProvider"
     }
   ],
   "requiresModules": []
