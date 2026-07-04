@@ -4,6 +4,7 @@ import type { MenuEntityKind, MenuEntitySearchResult, MenuEntityProvider, Resolv
 // Contributes to the "core.menu-entity-provider" extension point so the admin
 // menu builder can link to Boards content (BOARDS_SPEC menu-linking amendment).
 const KINDS: MenuEntityKind[] = [
+  { id: 'home', label: 'Boards home page' },
   { id: 'category', label: 'Board category' },
   { id: 'board', label: 'Board' },
   { id: 'sub-board', label: 'Sub-board' },
@@ -16,6 +17,9 @@ function listKinds(): MenuEntityKind[] {
 
 async function searchEntities(kind: string, query: string): Promise<MenuEntitySearchResult[]> {
   const q = `%${query}%`
+  if (kind === 'home') {
+    return [{ id: 'home', label: 'Boards home page' }]
+  }
   if (kind === 'category') {
     const rows = await prisma.$queryRaw<Array<{ id: string; title: string }>>`
       SELECT "id", "title" FROM "brd_categories" WHERE "title" ILIKE ${q} ORDER BY "position" ASC LIMIT 20
@@ -48,6 +52,9 @@ async function searchEntities(kind: string, query: string): Promise<MenuEntitySe
 }
 
 async function resolveEntity(kind: string, id: string): Promise<ResolvedMenuEntity | null> {
+  if (kind === 'home') {
+    return { label: 'Boards', href: '/boards', publiclyVisible: true }
+  }
   if (kind === 'category') {
     const rows = await prisma.$queryRaw<Array<{ title: string }>>`SELECT "title" FROM "brd_categories" WHERE "id" = ${id} LIMIT 1`
     if (!rows[0]) return null

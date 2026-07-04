@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
@@ -60,8 +60,8 @@
   "layoutTypes": {
     "groupLabel": "Boards",
     "types": [
-      { "key": "boardsCategory", "label": "Category", "starterImport": "./lib/starterLayouts", "starterExport": "boardsCategoryStarters" },
-      { "key": "boardsEntry", "label": "Entry", "starterImport": "./lib/starterLayouts", "starterExport": "boardsEntryStarters" }
+      { "key": "boardsCategory", "label": "Board", "starterImport": "./lib/starterLayouts", "starterExport": "boardsCategoryStarters" },
+      { "key": "boardsEntry", "label": "Thread", "starterImport": "./lib/starterLayouts", "starterExport": "boardsEntryStarters" }
     ]
   },
   "settingsTabs": [
