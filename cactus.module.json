@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",

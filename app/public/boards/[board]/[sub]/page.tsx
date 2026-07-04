@@ -11,7 +11,7 @@ import { getBoardsSettings } from '@/modules/boards/lib/settings'
 import ThreadListItem, { type ThreadRow } from '@/modules/boards/components/public/ThreadListItem'
 import NewThreadSection from '@/modules/boards/components/public/NewThreadSection'
 import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
-import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectCategoryContext, type PuckData } from '@/modules/boards/lib/inject-category-context'
 
 type Props = { params: Promise<{ board: string; sub: string }>; searchParams: Promise<{ page?: string }> }

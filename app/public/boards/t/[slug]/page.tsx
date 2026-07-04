@@ -19,7 +19,7 @@ import ViewTracker from '@/modules/boards/components/public/ViewTracker'
 import ReadTracker from '@/modules/boards/components/public/ReadTracker'
 import type { PostItemData } from '@/modules/boards/components/public/PostItem'
 import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
-import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config'
+import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectEntryContext } from '@/modules/boards/lib/inject-entry-context'
 import type { PuckData } from '@/modules/boards/lib/inject-category-context'
 
