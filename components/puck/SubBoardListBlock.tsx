@@ -1,10 +1,13 @@
-import { connection } from 'next/server'
-import Link from 'next/link'
-import { prisma } from '@/lib/db/prisma'
-import { getBoardBySlug } from '@/modules/boards/lib/db'
-
 // boardSlug/kind are injected by the category page (lib/inject-category-context.ts).
 // Renders nothing on a sub-board page - sub-boards are one level deep only.
+//
+// Editor half only. The database-backed render lives in ./SubBoardListBlock.rsc,
+// the same split every other block in this module already uses: this file is
+// pulled into the Puck editor's client bundle through the generated
+// module-components registry, so whatever it imports ends up in the browser. It
+// must never reach prisma - lib/db/prisma attaches a client extension at module
+// scope, which throws on load in a browser and takes the whole page builder down
+// with it, not just this block.
 export type SubBoardListProps = { boardSlug?: string; kind?: 'board' | 'sub-board' }
 
 export function SubBoardList() {
@@ -15,31 +18,9 @@ export function SubBoardList() {
   )
 }
 
-export async function SubBoardListRsc(props: SubBoardListProps) {
-  await connection()
-  if (props.kind === 'sub-board' || !props.boardSlug) return null
-  const board = await getBoardBySlug(props.boardSlug)
-  if (!board) return null
-
-  const subBoards = await prisma.$queryRaw<Array<{ id: string; title: string; slug: string }>>`
-    SELECT "id", "title", "slug" FROM "brd_sub_boards" WHERE "board_id" = ${board.id} ORDER BY "position" ASC
-  `
-  if (subBoards.length === 0) return null
-
-  return (
-    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', margin: '1rem 0' }}>
-      {subBoards.map((sb) => (
-        <Link key={sb.id} href={`/boards/${props.boardSlug}/${sb.slug}`} className="btn btn-ghost btn-sm">{sb.title}</Link>
-      ))}
-    </div>
-  )
-}
-
 export const subBoardListPuckComponent = {
   label: 'Boards: Sub-Board List',
   fields: {},
   defaultProps: {},
   render: SubBoardList,
 }
-
-export const subBoardListPuckRscComponent = { ...subBoardListPuckComponent, render: SubBoardListRsc }

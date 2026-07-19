@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
@@ -90,6 +90,7 @@
     {
       "type": "SubBoardList",
       "import": "./components/puck/SubBoardListBlock",
+      "rscImport": "./components/puck/SubBoardListBlock.rsc",
       "component": "subBoardListPuckComponent",
       "rscComponent": "subBoardListPuckRscComponent",
       "layoutTypes": [
