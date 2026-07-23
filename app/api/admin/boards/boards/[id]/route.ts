@@ -4,7 +4,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/permissions/check'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { ensureUniqueBoardSlug, slugifyTitle } from '@/modules/boards/lib/slug'
+import { ensureUniqueBoardSlug, slugifyTitle, RESERVED_BOARD_SLUGS } from '@/modules/boards/lib/slug'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -33,7 +33,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
   let slug: string | undefined
   if (b.title) {
-    if (['t', 'u'].includes(slugifyTitle(b.title))) return errorResponse('That title is reserved - please choose another')
+    if (RESERVED_BOARD_SLUGS.includes(slugifyTitle(b.title))) return errorResponse('That title is reserved - please choose another')
     slug = await ensureUniqueBoardSlug(slugifyTitle(b.title), id)
   }
 

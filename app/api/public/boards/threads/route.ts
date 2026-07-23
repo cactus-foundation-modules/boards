@@ -7,7 +7,7 @@ import { prisma } from '@/lib/db/prisma'
 import { getBoardsAccess } from '@/modules/boards/lib/permissions'
 import { isBoardVisible } from '@/modules/boards/lib/visibility'
 import { getBoardById, getSubBoardById, ensureUserProfile, touchLastSeen, incrementUserPostCount, bumpThreadOnNewPost } from '@/modules/boards/lib/db'
-import { ensureUniqueThreadSlug, slugifyTitle } from '@/modules/boards/lib/slug'
+import { ensureUniqueThreadSlug, slugifyTitle, RESERVED_BOARD_SLUGS } from '@/modules/boards/lib/slug'
 import { getBoardsSettings } from '@/modules/boards/lib/settings'
 import { runSubmissionGauntlet } from '@/modules/boards/lib/gauntlet'
 import { extractOpenerPlainText } from '@/modules/boards/lib/prose'
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     if (!subBoard || subBoard.board_id !== b.boardId) return errorResponse('Sub-board not found', 404)
   }
 
-  if (['t', 'u'].includes(slugifyTitle(b.title))) return errorResponse('That title is reserved - please choose another')
+  if (RESERVED_BOARD_SLUGS.includes(slugifyTitle(b.title))) return errorResponse('That title is reserved - please choose another')
 
   const settings = await getBoardsSettings()
   const profile = await ensureUserProfile(user.id, user.displayName ?? user.username)

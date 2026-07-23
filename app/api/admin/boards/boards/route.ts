@@ -4,7 +4,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { hasPermission } from '@/lib/permissions/check'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
-import { slugifyTitle, ensureUniqueBoardSlug } from '@/modules/boards/lib/slug'
+import { slugifyTitle, ensureUniqueBoardSlug, RESERVED_BOARD_SLUGS } from '@/modules/boards/lib/slug'
 
 export async function GET() {
   const user = await getSessionFromCookie()
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid input')
   const b = parsed.data
 
-  if (['t', 'u'].includes(slugifyTitle(b.title))) return errorResponse('That title is reserved - please choose another')
+  if (RESERVED_BOARD_SLUGS.includes(slugifyTitle(b.title))) return errorResponse('That title is reserved - please choose another')
 
   const slug = await ensureUniqueBoardSlug(slugifyTitle(b.title))
   const [{ next_position }] = await prisma.$queryRaw<[{ next_position: number }]>`

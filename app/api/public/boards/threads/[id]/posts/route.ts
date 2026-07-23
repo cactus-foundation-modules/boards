@@ -33,6 +33,13 @@ export async function POST(request: NextRequest, { params }: Params) {
   const access = await getBoardsAccess(user)
   if (!(await isBoardVisible(thread.board_id as string, true, access))) return errorResponse('Thread not found', 404)
 
+  // Mirror the thread page's moderation gate: non-moderators may only reply to a
+  // PUBLISHED thread. Without this a user could reply to their own PENDING thread
+  // or a mod-HIDDEN/DELETED one, and those replies would resurface on restore.
+  // (ARCHIVED threads read PUBLISHED here but are still blocked below by the
+  // gauntlet's targetLocked check.)
+  if (thread.status !== 'PUBLISHED' && !access?.canModerate) return errorResponse('Thread not found', 404)
+
   const board = await getBoardById(thread.board_id as string)
   const subBoard = thread.sub_board_id ? await getSubBoardById(thread.sub_board_id as string) : null
 

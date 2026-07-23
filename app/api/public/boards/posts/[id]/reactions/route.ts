@@ -4,6 +4,8 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
 import { getBoardsSettings } from '@/modules/boards/lib/settings'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
+import { isBoardVisible } from '@/modules/boards/lib/visibility'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -17,6 +19,14 @@ export async function POST(request: NextRequest, { params }: Params) {
   const parsed = Body.safeParse(await request.json())
   if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid input')
   const { emoji } = parsed.data
+
+  const [post] = await prisma.$queryRaw<Array<{ board_id: string }>>`
+    SELECT t."board_id" FROM "brd_posts" p JOIN "brd_threads" t ON t."id" = p."thread_id"
+    WHERE p."id" = ${postId} LIMIT 1
+  `
+  if (!post) return errorResponse('Post not found', 404)
+  const access = await getBoardsAccess(user)
+  if (!(await isBoardVisible(post.board_id, true, access))) return errorResponse('Post not found', 404)
 
   const settings = await getBoardsSettings()
   if (!settings.reactionsEnabled) return errorResponse('Reactions are disabled', 403)

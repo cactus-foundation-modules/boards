@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { errorResponse } from '@/lib/utils'
 import { prisma } from '@/lib/db/prisma'
+import { getBoardsAccess } from '@/modules/boards/lib/permissions'
+import { isBoardVisible } from '@/modules/boards/lib/visibility'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -13,10 +15,15 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!user) return errorResponse('Not authenticated', 401)
 
   const { id: pollId } = await params
-  const [poll] = await prisma.$queryRaw<Array<{ allow_multiple: boolean; closes_at: Date | null }>>`
-    SELECT "allow_multiple", "closes_at" FROM "brd_polls" WHERE "id" = ${pollId} LIMIT 1
+  const [poll] = await prisma.$queryRaw<Array<{ allow_multiple: boolean; closes_at: Date | null; board_id: string }>>`
+    SELECT p."allow_multiple", p."closes_at", t."board_id"
+    FROM "brd_polls" p JOIN "brd_threads" t ON t."id" = p."thread_id"
+    WHERE p."id" = ${pollId} LIMIT 1
   `
   if (!poll) return errorResponse('Poll not found', 404)
+
+  const access = await getBoardsAccess(user)
+  if (!(await isBoardVisible(poll.board_id, true, access))) return errorResponse('Poll not found', 404)
   if (poll.closes_at && poll.closes_at.getTime() < Date.now()) return errorResponse('This poll is closed', 403)
 
   const parsed = Body.safeParse(await request.json())

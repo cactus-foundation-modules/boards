@@ -5,9 +5,25 @@ export function slugifyTitle(title: string): string {
   return generateSlug(title)
 }
 
-// Sub-route segments a thread slug must never collide with, since /boards/<slug>
-// shares the URL space with /boards/t, /boards/u.
-export const RESERVED_BOARD_SLUGS = ['t', 'u']
+// Route segments a BOARD slug must never collide with, because /boards/<slug> is
+// a dynamic segment sharing its URL space with the static ones beside it, and a
+// static segment always wins - so a board slugged the same as one of these is
+// simply unreachable.
+//
+// This list must match the static directories sitting next to `[board]` in
+// app/public/boards/. If you add a route there, add it here too. Currently:
+//   app/public/boards/t/        -> 't'
+//   app/public/boards/u/        -> 'u'
+//   app/public/boards/tag/      -> 'tag'
+//   app/public/boards/feed.xml/ -> 'feed.xml'
+// ('tag' and 'feed.xml' were missing, so a board titled "Tag" was shadowed by
+// the tag listing and could not be opened. 'feed.xml' cannot currently be
+// produced by slugifyTitle, which drops the dot, but it is reserved anyway so
+// the list stays a faithful mirror of the routes rather than of today's slugify.)
+//
+// Thread slugs are deliberately NOT covered: they live under /boards/t/<slug>,
+// a prefix no other route shares, so they cannot collide.
+export const RESERVED_BOARD_SLUGS = ['t', 'u', 'tag', 'feed.xml']
 
 export async function ensureUniqueThreadSlug(base: string, excludeId?: string): Promise<string> {
   let slug = base || 'thread'
