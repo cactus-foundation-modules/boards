@@ -10,7 +10,9 @@ export async function GET(request: NextRequest) {
   const access = await getBoardsAccess(user)
   if (!access.canModerate) return errorResponse('Forbidden', 403)
 
-  const page = Math.max(1, parseInt(request.nextUrl.searchParams.get('page') ?? '1', 10))
+  // `|| 1` before the clamp: Math.max(1, NaN) is NaN, not 1 - see the boards
+  // search route for the 500 that caused.
+  const page = Math.max(1, parseInt(request.nextUrl.searchParams.get('page') ?? '1', 10) || 1)
   const perPage = 50
 
   const log = await prisma.$queryRaw`

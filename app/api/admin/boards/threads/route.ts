@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
   if (!access.canModerate) return errorResponse('Forbidden', 403)
 
   const sp = request.nextUrl.searchParams
-  const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10))
+  // `|| 1` before the clamp: Math.max(1, NaN) is NaN, not 1 - see the boards
+  // search route for the 500 that caused.
+  const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10) || 1)
   const perPage = 25
   const boardId = sp.get('boardId')
   const status = sp.get('status')

@@ -7,7 +7,12 @@ import { parsePhpBbXml } from '@/modules/boards/lib/import/phpbb'
 import { parseDiscourseJson } from '@/modules/boards/lib/import/discourse'
 import { runBoardsImport } from '@/modules/boards/lib/import/run'
 
-export const maxDuration = 60
+// No maxDuration here on purpose. Module routes are reached through the core
+// dispatcher (app/api/m/[module]/[...path]/route.ts), and Next only reads the
+// setting off the route file it actually compiles - which is the dispatcher's,
+// fixed at 60s. An export here read as though it set the ceiling for this import
+// while doing nothing at all, so raising it for a big archive would have failed
+// silently. Long imports have to be broken up, not given a bigger number.
 
 async function readFileText(file: File): Promise<string> {
   return Buffer.from(await file.arrayBuffer()).toString('utf-8')

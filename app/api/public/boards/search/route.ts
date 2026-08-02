@@ -10,7 +10,10 @@ export async function GET(request: NextRequest) {
   const q = sp.get('q')?.trim()
   if (!q) return NextResponse.json({ threads: [], total: 0 })
 
-  const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10))
+  // `|| 1` before the clamp: parseInt('abc') is NaN, and Math.max(1, NaN) is
+  // NaN, not 1 - which reached the query as OFFSET NaN and turned a mistyped
+  // page number in a public URL into a 500. Same idiom as the board pages.
+  const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10) || 1)
   const settings = await getBoardsSettings()
   const perPage = settings.threadsPerPage
 
