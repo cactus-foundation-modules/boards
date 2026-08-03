@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/db/prisma'
 import { sendEmail } from '@/lib/email'
+import { renderEmailTemplate } from '@/lib/email/render'
+import { escapeHtml } from '@/lib/email/blocks'
 import { isEmailConfigured, getSiteUrlOrNull } from '@/lib/config/env'
 
 type DigestUser = { user_id: string; email: string; last_digest_at: Date | null }
@@ -38,18 +40,24 @@ export async function runDigest(): Promise<{ sent: number }> {
 
     if (newThreads.length === 0 && newReplies.length === 0) continue
 
-    const lines: string[] = []
-    for (const t of newThreads) lines.push(`New thread: ${t.title} - ${siteUrl}/boards/t/${t.slug}`)
-    for (const t of newReplies) lines.push(`${Number(t.reply_count)} new repl${Number(t.reply_count) === 1 ? 'y' : 'ies'} in: ${t.title} - ${siteUrl}/boards/t/${t.slug}`)
+    // Titles are member-written, so they are escaped here before going into the
+    // list markup - which then travels as a rawTag, because the <li> and <a>
+    // around them have to survive core's escaping.
+    const items: string[] = []
+    for (const t of newThreads) {
+      items.push(`<li>New thread: <a href="${siteUrl}/boards/t/${encodeURIComponent(t.slug)}">${escapeHtml(t.title)}</a></li>`)
+    }
+    for (const t of newReplies) {
+      const count = Number(t.reply_count)
+      items.push(`<li>${count} new repl${count === 1 ? 'y' : 'ies'} in: <a href="${siteUrl}/boards/t/${encodeURIComponent(t.slug)}">${escapeHtml(t.title)}</a></li>`)
+    }
 
     try {
-      await sendEmail({
-        to: user.email,
-        subject: 'Your Boards digest',
-        html: `<p>Here's what's new in your subscriptions:</p><ul>${lines.map((l) => `<li>${l}</li>`).join('')}</ul>`,
-        text: lines.join('\n'),
-      })
-      sent++
+      const rendered = await renderEmailTemplate('boards.digest', { items: items.join('') })
+      if (rendered) {
+        await sendEmail({ to: user.email, subject: rendered.subject, html: rendered.html, text: rendered.text })
+        sent++
+      }
     } catch (err) {
       console.error('[boards/digest] sendEmail failed:', err)
     }

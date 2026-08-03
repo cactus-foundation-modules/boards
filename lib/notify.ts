@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma'
 import { sendEmail } from '@/lib/email'
+import { renderEmailTemplate } from '@/lib/email/render'
 import { getSiteUrlOrNull } from '@/lib/config/env'
 import { isEmailConfigured } from '@/lib/config/env'
 
@@ -33,12 +34,9 @@ export async function notifyUser(n: BoardsNotification): Promise<void> {
     const siteUrl = getSiteUrlOrNull() ?? ''
     const url = `${siteUrl}${n.link}`
 
-    await sendEmail({
-      to: user.email,
-      subject: n.title,
-      html: `<p>${n.title}</p><p><a href="${url}">${url}</a></p>`,
-      text: `${n.title}\n${url}`,
-    })
+    const rendered = await renderEmailTemplate('boards.notification', { title: n.title, url })
+    if (!rendered) return
+    await sendEmail({ to: user.email, subject: rendered.subject, html: rendered.html, text: rendered.text })
   } catch (err) {
     // Fire-and-forget: notifications never block the write path.
     console.error('[boards/notify] notifyUser failed:', err)

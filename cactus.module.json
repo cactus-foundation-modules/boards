@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
@@ -9,6 +9,7 @@
     "boards.manage",
     "boards.moderate"
   ],
+  "requiresCoreVersion": "0.5.892",
   "navGroupLabel": "Boards",
   "navEntries": [
     {
@@ -154,6 +155,11 @@
         "starterExport": "boardsEntryStarters"
       }
     ]
+  },
+  "emailTemplates": {
+    "groupLabel": "Boards",
+    "import": "./lib/email-templates",
+    "export": "boardsEmailTemplates"
   },
   "settingsTabs": [
     {
