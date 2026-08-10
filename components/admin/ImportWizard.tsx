@@ -32,7 +32,7 @@ export default function ImportWizard() {
 
   return (
     <div className="card" style={{ padding: '1.25rem', maxWidth: 640 }}>
-      <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+      <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
         Import an existing forum from phpBB (XML export) or Discourse (JSON export). Re-running an
         import is safe - already-imported threads and posts are skipped, never duplicated.
       </p>

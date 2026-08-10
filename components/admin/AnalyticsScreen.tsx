@@ -32,7 +32,7 @@ export default function AnalyticsScreen() {
         ].map((s) => (
           <div key={s.label} className="card" style={{ textAlign: 'center', padding: '1.25rem' }}>
             <div style={{ fontSize: '2rem', fontWeight: 700 }}>{s.value}</div>
-            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>{s.label}</div>
+            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{s.label}</div>
           </div>
         ))}
       </div>

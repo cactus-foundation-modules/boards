@@ -287,7 +287,7 @@ export default function StructureScreen() {
 
       {tab === 'Templates' && (
         <div>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>Thread templates are saved from the public new-thread composer and offered there as a starting point.</p>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>Thread templates are saved from the public new-thread composer and offered there as a starting point.</p>
           <table className="table">
             <thead><tr><th>Title</th><th></th></tr></thead>
             <tbody>

@@ -16,9 +16,9 @@ export async function boardsDashboardWidget() {
     <div className="card" style={{ padding: '1.25rem' }}>
       <h2 className="card-title" style={{ margin: '0 0 0.75rem' }}>Boards</h2>
       <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '0.75rem' }}>
-        <div><div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{Number(threads)}</div><div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>Threads</div></div>
-        <div><div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{Number(posts)}</div><div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>Posts</div></div>
-        <div><div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{Number(open_queue)}</div><div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>Awaiting review</div></div>
+        <div><div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{Number(threads)}</div><div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Threads</div></div>
+        <div><div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{Number(posts)}</div><div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Posts</div></div>
+        <div><div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{Number(open_queue)}</div><div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Awaiting review</div></div>
       </div>
       <a href={`/${adminPath}/m/boards/threads`} style={{ fontSize: 'var(--text-sm)', color: 'var(--color-primary)', textDecoration: 'none' }}>Manage Boards →</a>
     </div>
