@@ -1,8 +1,16 @@
 // Starter layout templates for the boardsCategory/boardsEntry layout types,
 // collected by scripts/generate-module-layout-types.mjs (core) via this
 // module's cactus.module.json layoutTypes.types[].starterImport/starterExport.
-// Seeded as drafts only (see lib/setup/starterLayouts.ts) - the site owner
-// opts in by publishing one.
+//
+// Seeding is opt-in per template: core's seedTemplates() copies the ones marked
+// publishByDefault and skips the rest entirely - it does not seed drafts. None
+// were marked here, so an install got no Boards layouts at all and both tabs sat
+// empty under Layouts with nothing to say why; worse, the stamp that records the
+// one-and-only seeding attempt goes on regardless, so no later release could fill
+// them in. Exactly one template per type is marked now, the full-width one in
+// each case: the same arrangement as the hardcoded board and thread pages it
+// takes over from, so a fresh install looks the same either way. The other four
+// are still there in the + New Layout picker.
 
 const block = (type: string, id: string, props: Record<string, unknown> = {}) => ({ type, props: { id, ...props } })
 
@@ -48,6 +56,9 @@ export function boardsCategoryStarters() {
       id: 'starter-boards-category-banner',
       name: 'Full Width with Banner',
       description: 'Header, full-width sub-board banner, then a full-width thread list below.',
+      // The seeded default: sub-boards above threads, full width, exactly as the
+      // hardcoded board page lays them out.
+      publishByDefault: true,
       data: {
         content: [
           block('BoardHeader', 'header-1'),
@@ -97,6 +108,9 @@ export function boardsEntryStarters() {
       id: 'starter-boards-entry-hero',
       name: 'Full Width Hero then Details',
       description: 'Full-width header, boxed body, replies stacked below.',
+      // The seeded default: header, body, replies - the same run of parts as the
+      // hardcoded thread page.
+      publishByDefault: true,
       data: {
         content: [
           block('ThreadHeader', 'header-1'),
