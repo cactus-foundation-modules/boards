@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="module-art.webp" alt="Cactus Boards Module" width="640" />
+</p>
+
 # Cactus Boards Module
 
 A discussion forum for [Cactus](https://github.com/usersaynoso/cactus-foundation).
