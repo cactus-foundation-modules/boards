@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { TabStrip } from '@/components/admin/TabStrip'
+import { useTabParam } from '@/modules/boards/lib/admin-tab-url'
 
 type Category = { id: string; title: string; position: number }
 type Board = { id: string; title: string; slug: string; category_id: string | null; visibility: string; is_locked: boolean; noindex: boolean }
@@ -42,7 +43,7 @@ function RenameField({ value, onSave }: { value: string; onSave: (value: string)
 }
 
 export default function StructureScreen() {
-  const [tab, setTab] = useState<typeof SUB_TABS[number]>('Boards')
+  const [tab, setTab] = useTabParam('tab', 'Boards' as typeof SUB_TABS[number], SUB_TABS)
   const [categories, setCategories] = useState<Category[]>([])
   const [boards, setBoards] = useState<Board[]>([])
   const [subBoards, setSubBoards] = useState<SubBoard[]>([])

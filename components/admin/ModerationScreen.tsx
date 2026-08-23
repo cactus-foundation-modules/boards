@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { TabStrip } from '@/components/admin/TabStrip'
+import { useTabParam } from '@/modules/boards/lib/admin-tab-url'
 
 type QueueItem = { id: string; item_type: string; item_id: string; reason: string; title: string | null; created_at: string }
 type Report = { id: string; item_type: string; item_id: string; reason: string; created_at: string }
@@ -13,7 +14,7 @@ const SUB_TABS = ['Queue', 'Reports', 'Bans', 'IP Bans', 'Log'] as const
 const inputStyle = { padding: '0.375rem 0.625rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)' }
 
 export default function ModerationScreen() {
-  const [tab, setTab] = useState<typeof SUB_TABS[number]>('Queue')
+  const [tab, setTab] = useTabParam('tab', 'Queue' as typeof SUB_TABS[number], SUB_TABS)
   const [queue, setQueue] = useState<QueueItem[]>([])
   const [reports, setReports] = useState<Report[]>([])
   const [bans, setBans] = useState<Ban[]>([])
