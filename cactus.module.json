@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
@@ -19,9 +19,7 @@
     }
   ],
   "requiredEnvVars": [],
-  "cookieCategories": [
-    "functional"
-  ],
+  "cookieCategories": [],
   "teardown": [
     "brd_thread_tags",
     "brd_thread_views",
