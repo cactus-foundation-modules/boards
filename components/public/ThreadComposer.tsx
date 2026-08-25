@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Puck } from '@puckeditor/core'
+import { LazyPuck as Puck } from '@/modules/boards/components/public/LazyPuck'
 import type { Data } from '@puckeditor/core'
 import '@puckeditor/core/no-external.css'
 import { bodyEditorConfig } from '@/modules/boards/components/puck/body/bodyEditorConfig'

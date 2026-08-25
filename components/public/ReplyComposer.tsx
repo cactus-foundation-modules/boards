@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Puck } from '@puckeditor/core'
+import { LazyPuck as Puck } from '@/modules/boards/components/public/LazyPuck'
 import type { Data } from '@puckeditor/core'
 import '@puckeditor/core/no-external.css'
 import { boardsProseFieldDef } from '@/modules/boards/components/puck/body/BoardsProse'
