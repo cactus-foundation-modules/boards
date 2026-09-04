@@ -1,6 +1,7 @@
 import { boardsProseRscFieldDef } from './BoardsProse'
 import { boardsPullQuoteFieldDef } from './BoardsPullQuote'
-import { boardsCodeFieldDef, BoardsCodeRsc } from './BoardsCode'
+import { boardsCodeFieldDef } from './BoardsCode'
+import { BoardsCodeRsc } from './BoardsCodeRsc'
 import { boardsImageRscFieldDef } from './BoardsImage'
 import { makeBoardsPollRscFieldDef, type BoardsPollRenderContext } from './BoardsPoll'
 import { boardsEmbedFieldDef } from './BoardsEmbed'

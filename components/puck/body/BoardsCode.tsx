@@ -1,9 +1,25 @@
-import { codeToHtml, createCssVariablesTheme } from 'shiki'
 import CodeCopyButton from './CodeCopyButton'
+
+// The code block's editor half, and the field definition both halves share.
+//
+// Nothing in this file may import shiki, and that is not a style preference.
+// bodyEditorConfig imports this file, ThreadComposer imports bodyEditorConfig,
+// and ThreadComposer is a PUBLIC client component - so anything reachable from
+// here is compiled into the browser bundle of anybody writing a post, not just an
+// admin. When the shiki import lived here it took the highlighter, its regex
+// engine and every one of the ~350 grammars in the default bundle with it, all so
+// a composer canvas could render a <pre> of plain text. The highlighting lives in
+// BoardsCodeRsc.tsx, which only the server-side config reaches.
 
 export type BoardsCodeProps = { code?: string; language?: string }
 
-const LANGUAGE_OPTIONS = [
+/**
+ * The languages the block offers, and therefore the only grammars BoardsCodeRsc
+ * has to load. Exported so the two cannot drift: adding a language here without
+ * adding its grammar there would leave the block offering something it cannot
+ * highlight.
+ */
+export const LANGUAGE_OPTIONS = [
   { value: 'plaintext', label: 'Plain text' },
   { value: 'bash', label: 'Bash' },
   { value: 'css', label: 'CSS' },
@@ -25,8 +41,14 @@ const LANGUAGE_OPTIONS = [
   { value: 'yaml', label: 'YAML' },
 ]
 
-const cssVariablesTheme = createCssVariablesTheme({ name: 'cactus', variablePrefix: '--brd-shiki-' })
+/** Escaping for the markup BoardsCodeRsc falls back to when it cannot highlight,
+ *  kept here so both halves of the block agree on it. */
+export function escapeCode(code: string): string {
+  return code.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!))
+}
 
+// Composer canvas: synchronous, plain text - avoids loading a highlighter on
+// every keystroke while somebody is writing a post.
 export function BoardsCode({ code = '', language = 'plaintext' }: BoardsCodeProps) {
   return (
     <figure className="brd-code">
@@ -35,24 +57,6 @@ export function BoardsCode({ code = '', language = 'plaintext' }: BoardsCodeProp
         <CodeCopyButton code={code} />
       </div>
       <pre className="brd-code-pre"><code>{code}</code></pre>
-    </figure>
-  )
-}
-
-export async function BoardsCodeRsc({ code = '', language = 'plaintext' }: BoardsCodeProps) {
-  let html = ''
-  try {
-    html = await codeToHtml(code, { lang: language, theme: cssVariablesTheme })
-  } catch {
-    html = `<pre class="brd-code-pre"><code>${code.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!))}</code></pre>`
-  }
-  return (
-    <figure className="brd-code">
-      <div className="brd-code-header">
-        <span className="brd-code-lang">{language}</span>
-        <CodeCopyButton code={code} />
-      </div>
-      <div className="brd-code-highlighted" dangerouslySetInnerHTML={{ __html: html }} />
     </figure>
   )
 }
