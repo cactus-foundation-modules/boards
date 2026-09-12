@@ -1,6 +1,6 @@
 {
   "name": "boards",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "tablePrefix": "brd_",
   "description": "A discussion forum. Boards, sub-boards, threads and replies for registered users, with moderation, polls, subscriptions and email digests.",
   "publicBasePath": "boards",
@@ -9,7 +9,7 @@
     "boards.manage",
     "boards.moderate"
   ],
-  "requiresCoreVersion": "0.5.892",
+  "requiresCoreVersion": "0.5.1593",
   "navEntries": [
     {
       "label": "Boards",

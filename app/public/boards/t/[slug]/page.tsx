@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Render } from '@puckeditor/core/rsc'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
@@ -22,6 +21,7 @@ import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
 import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectEntryContext } from '@/modules/boards/lib/inject-entry-context'
 import type { PuckData } from '@/modules/boards/lib/inject-category-context'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ page?: string; sort?: string }> }
 
@@ -57,7 +57,7 @@ export default async function ThreadPage({ params, searchParams }: Props) {
     const data = injectEntryContext(layout.builderData as PuckData, {
       threadSlug: slug, boardSlug: (boardForSlug?.slug as string) ?? '', page: Math.max(1, parseInt(pageParam2 ?? '1', 10) || 1), sort: sort2,
     })
-    return <Render config={getModuleLayoutPuckRscConfig('boardsEntry') as any} data={data as any} />
+    return <CactusRender config={getModuleLayoutPuckRscConfig('boardsEntry') as any} data={data as any} />
   }
 
   const board = await getBoardById(thread.board_id as string)

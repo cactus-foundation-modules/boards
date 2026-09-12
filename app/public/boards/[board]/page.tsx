@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Render } from '@puckeditor/core/rsc'
 import { getSessionFromCookie } from '@/lib/auth/session'
 import { prisma } from '@/lib/db/prisma'
 import { getBoardsAccess } from '@/modules/boards/lib/permissions'
@@ -13,6 +12,7 @@ import NewThreadSection from '@/modules/boards/components/public/NewThreadSectio
 import { resolveThemeLayout } from '@/lib/layout/resolveThemeLayout'
 import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectCategoryContext, type PuckData } from '@/modules/boards/lib/inject-category-context'
+import { CactusRender } from '@/lib/puck/CactusRender'
 
 type Props = { params: Promise<{ board: string }>; searchParams: Promise<{ page?: string }> }
 
@@ -41,7 +41,7 @@ export default async function BoardPage({ params, searchParams }: Props) {
   const layout = await resolveThemeLayout('boardsCategory', { moduleName: 'boards', slug })
   if (layout?.builderData) {
     const data = injectCategoryContext(layout.builderData as PuckData, { boardSlug: slug, kind: 'board', page })
-    return <Render config={getModuleLayoutPuckRscConfig('boardsCategory') as any} data={data as any} />
+    return <CactusRender config={getModuleLayoutPuckRscConfig('boardsCategory') as any} data={data as any} />
   }
 
   const settings = await getBoardsSettings()
