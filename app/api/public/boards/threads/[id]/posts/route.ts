@@ -10,6 +10,7 @@ import { getThreadById, getBoardById, getSubBoardById, getPostById, ensureUserPr
 import { getBoardsSettings } from '@/modules/boards/lib/settings'
 import { runSubmissionGauntlet } from '@/modules/boards/lib/gauntlet'
 import { renderProseHtml, extractProseText } from '@/modules/boards/lib/prose'
+import { sanitizeRichText } from '@/lib/sanitize'
 import { enqueueModerationItem } from '@/modules/boards/lib/moderation'
 import { parseMentionUsernames, resolveMentionedUserIds } from '@/modules/boards/lib/mentions'
 import { notifyUser } from '@/modules/boards/lib/notify'
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!gauntlet.ok) return errorResponse(gauntlet.error, gauntlet.statusCode)
 
   const authorName = user.displayName ?? user.username
-  const bodyHtml = renderProseHtml(b.bodySource as any)
+  const bodyHtml = sanitizeRichText(renderProseHtml(b.bodySource as any))
 
   const [post] = await prisma.$queryRaw<Record<string, unknown>[]>`
     INSERT INTO "brd_posts" (

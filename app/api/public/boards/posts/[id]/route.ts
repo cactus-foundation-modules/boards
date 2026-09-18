@@ -6,6 +6,7 @@ import { prisma } from '@/lib/db/prisma'
 import { getBoardsAccess, withinEditWindow } from '@/modules/boards/lib/permissions'
 import { getBoardsSettings } from '@/modules/boards/lib/settings'
 import { renderProseHtml } from '@/modules/boards/lib/prose'
+import { sanitizeRichText } from '@/lib/sanitize'
 import { recomputeThreadCounts } from '@/modules/boards/lib/db'
 
 type Params = { params: Promise<{ id: string }> }
@@ -49,7 +50,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     INSERT INTO "brd_post_revisions" ("post_id", "body_html", "body_source", "edited_by")
     VALUES (${id}, ${post.body_html}, ${post.body_source as any}, ${user.id})
   `
-  const bodyHtml = renderProseHtml(parsed.data.bodySource as any)
+  const bodyHtml = sanitizeRichText(renderProseHtml(parsed.data.bodySource as any))
   const [updated] = await prisma.$queryRaw<Record<string, unknown>[]>`
     UPDATE "brd_posts" SET "body_html" = ${bodyHtml}, "body_source" = ${parsed.data.bodySource as any}::jsonb,
       "edited_at" = CURRENT_TIMESTAMP, "edited_by" = ${user.id}, "updated_at" = CURRENT_TIMESTAMP

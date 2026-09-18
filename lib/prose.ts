@@ -20,7 +20,11 @@ import { BulletList, OrderedList, ListItem } from '@tiptap/extension-list'
 export const proseExtensions = [
   Document, Paragraph, Text, Bold, Italic,
   Heading.configure({ levels: [2, 3, 4] }),
-  Blockquote, HardBreak, Link,
+  Blockquote, HardBreak,
+  // Same protocol list as core's RichText block (lib/puck/config.core.tsx). The
+  // published render sanitises as well (see the *ProseRsc component) - this
+  // only narrows what the editor lets in.
+  Link.configure({ protocols: ['http', 'https', 'mailto', 'tel'] }),
   BulletList, OrderedList, ListItem,
 ]
 

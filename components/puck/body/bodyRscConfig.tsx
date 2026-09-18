@@ -1,4 +1,4 @@
-import { boardsProseRscFieldDef } from './BoardsProse'
+import { boardsProseRscFieldDef } from './BoardsProseRsc'
 import { boardsPullQuoteFieldDef } from './BoardsPullQuote'
 import { boardsCodeFieldDef } from './BoardsCode'
 import { BoardsCodeRsc } from './BoardsCodeRsc'

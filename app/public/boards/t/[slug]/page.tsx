@@ -22,6 +22,7 @@ import { getModuleLayoutPuckRscConfig } from '@/lib/puck/config.rsc'
 import { injectEntryContext } from '@/modules/boards/lib/inject-entry-context'
 import type { PuckData } from '@/modules/boards/lib/inject-category-context'
 import { CactusRender } from '@/lib/puck/CactusRender'
+import { sanitizeRichText } from '@/lib/sanitize'
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ page?: string; sort?: string }> }
 
@@ -128,7 +129,7 @@ export default async function ThreadPage({ params, searchParams }: Props) {
     id: p.id as string,
     authorId: p.author_id as string | null,
     authorName: p.author_name as string,
-    bodyHtml: p.status === 'DELETED' ? '<p><em>Post removed</em></p>' : (p.body_html as string),
+    bodyHtml: p.status === 'DELETED' ? '<p><em>Post removed</em></p>' : sanitizeRichText(p.body_html as string),
     editedAt: p.edited_at ? (p.edited_at as Date).toISOString() : null,
     createdAt: (p.created_at as Date).toISOString(),
     quotedPostId: (p.reply_to_post_id as string | null) ?? undefined,

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 type Props = {
@@ -12,15 +13,29 @@ type Props = {
 
 export default function ThreadModControls({ threadId, isPinned, isLocked, isArchived, isGlobalAnnouncement }: Props) {
   const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+
+  // Reports a refused or failed request instead of carrying on as if it
+  // worked - a delete that 403'd used to navigate away regardless.
+  async function send(url: string, method: string, failure: string): Promise<boolean> {
+    setError(null)
+    try {
+      const res = await fetch(url, { method })
+      if (res.ok) return true
+      const data = await res.json().catch(() => ({}))
+      setError((data as { error?: string }).error ?? failure)
+    } catch {
+      setError(failure)
+    }
+    return false
+  }
 
   async function action(path: string) {
-    await fetch(`/api/m/boards/admin/threads/${threadId}${path}`, { method: 'POST' })
-    router.refresh()
+    if (await send(`/api/m/boards/admin/threads/${threadId}${path}`, 'POST', 'That did not work - please try again.')) router.refresh()
   }
   async function remove() {
     if (!confirm('Delete this thread?')) return
-    await fetch(`/api/m/boards/admin/threads/${threadId}`, { method: 'DELETE' })
-    router.push('/boards')
+    if (await send(`/api/m/boards/admin/threads/${threadId}`, 'DELETE', 'Could not delete the thread.')) router.push('/boards')
   }
 
   return (
@@ -31,6 +46,7 @@ export default function ThreadModControls({ threadId, isPinned, isLocked, isArch
       <button type="button" className="btn btn-ghost btn-sm" onClick={() => action('/archive')}>{isArchived ? 'Unarchive' : 'Archive'}</button>
       <button type="button" className="btn btn-ghost btn-sm" onClick={() => action('/announce')}>{isGlobalAnnouncement ? 'Unannounce' : 'Announce'}</button>
       <button type="button" className="btn btn-danger btn-sm" onClick={remove}>Delete</button>
+      {error && <p role="alert" style={{ color: 'var(--color-danger)', fontSize: 'var(--text-sm)', margin: 0, flexBasis: '100%' }}>{error}</p>}
     </div>
   )
 }

@@ -30,25 +30,44 @@ type Props = {
 export default function PostItem({ post, currentUserId, isModerator, canEdit, reactionsEnabled, reactionSet, initialCounts, initialActive, onReply }: Props) {
   const [hidden, setHidden] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const isOwn = currentUserId === post.authorId
 
-  async function moderate(action: 'hide' | 'delete') {
+  // Only hides the post once the server has agreed. It used to hide it
+  // regardless, so a refused or failed request (a 403, a dropped connection)
+  // looked exactly like a successful one until the next page load.
+  async function send(url: string, init: RequestInit, failure: string) {
     setBusy(true)
-    await fetch(`/api/m/boards/admin/posts/${post.id}`, {
+    setError(null)
+    try {
+      const res = await fetch(url, init)
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError((data as { error?: string }).error ?? failure)
+        return
+      }
+      setHidden(true)
+    } catch {
+      setError(failure)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function moderate(action: 'hide' | 'delete') {
+    const question = action === 'hide' ? 'Hide this post from the thread?' : 'Delete this post?'
+    if (!confirm(question)) return
+    await send(`/api/m/boards/admin/posts/${post.id}`, {
       method: action === 'hide' ? 'PATCH' : 'DELETE',
       headers: action === 'hide' ? { 'Content-Type': 'application/json' } : undefined,
       body: action === 'hide' ? JSON.stringify({ status: 'HIDDEN' }) : undefined,
-    })
-    setHidden(true)
-    setBusy(false)
+    }, action === 'hide' ? 'Could not hide the post.' : 'Could not delete the post.')
   }
 
   async function selfDelete() {
-    setBusy(true)
-    await fetch(`/api/m/boards/public/posts/${post.id}`, { method: 'DELETE' })
-    setHidden(true)
-    setBusy(false)
+    if (!confirm('Delete your post?')) return
+    await send(`/api/m/boards/public/posts/${post.id}`, { method: 'DELETE' }, 'Could not delete the post.')
   }
 
   async function report() {
@@ -93,6 +112,7 @@ export default function PostItem({ post, currentUserId, isModerator, canEdit, re
         {isModerator && !isOwn && <button type="button" className="btn btn-ghost btn-sm" disabled={busy} onClick={() => moderate('hide')}>Hide</button>}
         {isModerator && <button type="button" className="btn btn-danger btn-sm" disabled={busy} onClick={() => moderate('delete')}>Delete (mod)</button>}
       </div>
+      {error && <p role="alert" style={{ color: 'var(--color-danger)', fontSize: 'var(--text-sm)', marginTop: '0.5rem' }}>{error}</p>}
     </div>
   )
 }

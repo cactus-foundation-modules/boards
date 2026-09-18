@@ -9,6 +9,7 @@ import { getBoardsSettings } from '@/modules/boards/lib/settings'
 import ThreadReplySection from '@/modules/boards/components/public/ThreadReplySection'
 import type { PostItemData } from '@/modules/boards/components/public/PostItem'
 import { replyListPuckComponent, type ReplyListProps } from './ReplyListBlock'
+import { sanitizeRichText } from '@/lib/sanitize'
 
 export async function ReplyListRsc(props: ReplyListProps) {
   await connection()
@@ -59,7 +60,7 @@ export async function ReplyListRsc(props: ReplyListProps) {
     id: p.id as string,
     authorId: p.author_id as string | null,
     authorName: p.author_name as string,
-    bodyHtml: p.status === 'DELETED' ? '<p><em>Post removed</em></p>' : (p.body_html as string),
+    bodyHtml: p.status === 'DELETED' ? '<p><em>Post removed</em></p>' : sanitizeRichText(p.body_html as string),
     editedAt: p.edited_at ? (p.edited_at as Date).toISOString() : null,
     createdAt: (p.created_at as Date).toISOString(),
     quotedPostId: (p.reply_to_post_id as string | null) ?? undefined,

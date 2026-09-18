@@ -40,11 +40,4 @@ export const boardsProseFieldDef = {
   render: BoardsProse,
 }
 
-// RSC variant: the richtext field type triggers a client-only hook even inside
-// <Render>, so - mirroring Gazette's own treatment - the RSC field def swaps
-// to a plain textarea. Fields are never shown for public rendering anyway.
-export const boardsProseRscFieldDef = {
-  ...boardsProseFieldDef,
-  fields: { content: { type: 'textarea' as const, label: 'Content (TipTap JSON)' } },
-  render: BoardsProse,
-}
+// The RSC field def lives in BoardsProseRsc.tsx (server-only, sanitised).
