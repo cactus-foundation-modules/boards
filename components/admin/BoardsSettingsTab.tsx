@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import ImportWizard from './ImportWizard'
+import { TabStrip } from '@/components/admin/TabStrip'
+import { SettingsHeaderActions, SettingsHeaderStatus } from '@/components/admin/SettingsHeaderActions'
 
 type Settings = {
   threadsPerPage: number
@@ -27,6 +29,7 @@ const rowStyle = { display: 'flex', alignItems: 'center', justifyContent: 'space
 export function BoardsSettingsTab() {
   const [settings, setSettings] = useState<Settings | null>(null)
   const [saved, setSaved] = useState(false)
+  const [sub, setSub] = useState<'settings' | 'import'>('settings')
 
   useEffect(() => {
     fetch('/api/m/boards/admin/settings').then((r) => r.json()).then(setSettings)
@@ -47,7 +50,21 @@ export function BoardsSettingsTab() {
 
   return (
     <div>
-      <div className="card" style={{ padding: '1.25rem', maxWidth: 640 }}>
+      <TabStrip
+        items={[
+          { key: 'settings', label: 'Settings', active: sub === 'settings', onClick: () => setSub('settings') },
+          { key: 'import', label: 'Import', active: sub === 'import', onClick: () => setSub('import') },
+        ]}
+      />
+
+      {sub === 'settings' && (
+        <div className="settings-cols">
+          <SettingsHeaderActions>
+            <SettingsHeaderStatus message={saved ? 'Saved' : null} />
+            <button className="btn btn-primary" onClick={save}>Save changes</button>
+          </SettingsHeaderActions>
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.9375rem' }}>Display and feeds</h3>
         <div style={rowStyle}><label>Threads per page</label><input type="number" style={inputStyle} value={settings.threadsPerPage} onChange={(e) => set('threadsPerPage', Number(e.target.value))} /></div>
         <div style={rowStyle}><label>Posts per page</label><input type="number" style={inputStyle} value={settings.postsPerPage} onChange={(e) => set('postsPerPage', Number(e.target.value))} /></div>
         <div style={rowStyle}><label>RSS feeds enabled</label><input type="checkbox" checked={settings.rssEnabled} onChange={(e) => set('rssEnabled', e.target.checked)} /></div>
@@ -56,24 +73,26 @@ export function BoardsSettingsTab() {
         <div style={rowStyle}><label>Reactions enabled</label><input type="checkbox" checked={settings.reactionsEnabled} onChange={(e) => set('reactionsEnabled', e.target.checked)} /></div>
         <div style={rowStyle}><label>Signatures enabled</label><input type="checkbox" checked={settings.signaturesEnabled} onChange={(e) => set('signaturesEnabled', e.target.checked)} /></div>
         <div style={rowStyle}><label>Signature max length</label><input type="number" style={inputStyle} value={settings.signatureMaxLength} onChange={(e) => set('signatureMaxLength', Number(e.target.value))} /></div>
+        <div style={rowStyle}><label>Show view counts</label><input type="checkbox" checked={settings.showViewCounts} onChange={(e) => set('showViewCounts', e.target.checked)} /></div>
+          </div>
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.9375rem' }}>Posting rules</h3>
         <div style={rowStyle}><label>Minimum account age to post (days, 0 = off)</label><input type="number" style={inputStyle} value={settings.minAccountAgeDays} onChange={(e) => set('minAccountAgeDays', Number(e.target.value))} /></div>
         <div style={rowStyle}><label>First-post moderation threshold (0 = off)</label><input type="number" style={inputStyle} value={settings.firstPostCount} onChange={(e) => set('firstPostCount', Number(e.target.value))} /></div>
         <div style={rowStyle}><label>First-post account age window (days)</label><input type="number" style={inputStyle} value={settings.firstPostAccountAgeDays} onChange={(e) => set('firstPostAccountAgeDays', Number(e.target.value))} /></div>
         <div style={rowStyle}><label>Post cooldown (seconds)</label><input type="number" style={inputStyle} value={settings.postCooldownSeconds} onChange={(e) => set('postCooldownSeconds', Number(e.target.value))} /></div>
         <div style={rowStyle}><label>Posts per hour limit</label><input type="number" style={inputStyle} value={settings.postsPerHourLimit} onChange={(e) => set('postsPerHourLimit', Number(e.target.value))} /></div>
         <div style={rowStyle}><label>Edit window (minutes, 0 = unlimited)</label><input type="number" style={inputStyle} value={settings.editWindowMinutes} onChange={(e) => set('editWindowMinutes', Number(e.target.value))} /></div>
-        <div style={rowStyle}><label>Show view counts</label><input type="checkbox" checked={settings.showViewCounts} onChange={(e) => set('showViewCounts', e.target.checked)} /></div>
-
-        <div style={{ marginTop: '1rem' }}>
-          <button className="btn btn-primary btn-sm" onClick={save}>Save settings</button>
-          {saved && <span style={{ marginLeft: '0.75rem', color: 'var(--color-success)', fontSize: 'var(--text-sm)' }}>Saved</span>}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--color-border)', maxWidth: 720 }}>
-        <h3 style={{ margin: '0 0 1rem', fontSize: '0.9375rem' }}>Import</h3>
-        <ImportWizard />
-      </div>
+      {sub === 'import' && (
+        <div className="card" style={{ padding: '1.25rem' }}>
+          <h3 style={{ margin: '0 0 1rem', fontSize: '0.9375rem' }}>Import</h3>
+          <ImportWizard />
+        </div>
+      )}
     </div>
   )
 }
