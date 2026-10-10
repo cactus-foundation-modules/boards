@@ -23,8 +23,6 @@ type Settings = {
   showViewCounts: boolean
 }
 
-const inputStyle = { padding: '0.375rem 0.625rem', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg)', color: 'var(--color-text)', width: '100%', maxWidth: 200 }
-const rowStyle = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '0.625rem 0', borderBottom: '1px solid var(--color-border)' }
 
 export function BoardsSettingsTab() {
   const [settings, setSettings] = useState<Settings | null>(null)
@@ -46,7 +44,7 @@ export function BoardsSettingsTab() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  if (!settings) return <p>Loading…</p>
+  if (!settings) return <p style={{ color: 'var(--color-text-muted)' }}>Loading…</p>
 
   return (
     <div>
@@ -63,33 +61,91 @@ export function BoardsSettingsTab() {
             <SettingsHeaderStatus message={saved ? 'Saved' : null} />
             <button className="btn btn-primary" onClick={save}>Save changes</button>
           </SettingsHeaderActions>
-          <div className="card" style={{ padding: '1.25rem' }}>
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.9375rem' }}>Display and feeds</h3>
-        <div className="settings-field" style={rowStyle}><label>Threads per page</label><input type="number" style={inputStyle} value={settings.threadsPerPage} onChange={(e) => set('threadsPerPage', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>Posts per page</label><input type="number" style={inputStyle} value={settings.postsPerPage} onChange={(e) => set('postsPerPage', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>RSS feeds enabled</label><input type="checkbox" checked={settings.rssEnabled} onChange={(e) => set('rssEnabled', e.target.checked)} /></div>
-        <div className="settings-field" style={rowStyle}><label>Feed title</label><input style={inputStyle} value={settings.feedTitle ?? ''} onChange={(e) => set('feedTitle', e.target.value || null)} /></div>
-        <div className="settings-field" style={rowStyle}><label>Feed description</label><input style={inputStyle} value={settings.feedDescription ?? ''} onChange={(e) => set('feedDescription', e.target.value || null)} /></div>
-        <div className="settings-field" style={rowStyle}><label>Reactions enabled</label><input type="checkbox" checked={settings.reactionsEnabled} onChange={(e) => set('reactionsEnabled', e.target.checked)} /></div>
-        <div className="settings-field" style={rowStyle}><label>Signatures enabled</label><input type="checkbox" checked={settings.signaturesEnabled} onChange={(e) => set('signaturesEnabled', e.target.checked)} /></div>
-        <div className="settings-field" style={rowStyle}><label>Signature max length</label><input type="number" style={inputStyle} value={settings.signatureMaxLength} onChange={(e) => set('signatureMaxLength', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>Show view counts</label><input type="checkbox" checked={settings.showViewCounts} onChange={(e) => set('showViewCounts', e.target.checked)} /></div>
+          <div className="card">
+            <div className="card-title">Pages and posts</div>
+            <div className="field">
+              <label htmlFor="boards-threadsPerPage">Threads per page</label>
+              <input id="boards-threadsPerPage" type="number" min={0} value={settings.threadsPerPage} onChange={(e) => set('threadsPerPage', Number(e.target.value))} />
+            </div>
+            <div className="field">
+              <label htmlFor="boards-postsPerPage">Posts per page</label>
+              <input id="boards-postsPerPage" type="number" min={0} value={settings.postsPerPage} onChange={(e) => set('postsPerPage', Number(e.target.value))} />
+            </div>
+            <div className="field">
+              <label className="settings-check">
+                <input type="checkbox" checked={settings.showViewCounts} onChange={(e) => set('showViewCounts', e.target.checked)} />
+                Show view counts
+              </label>
+            </div>
+            <div className="field">
+              <label className="settings-check">
+                <input type="checkbox" checked={settings.reactionsEnabled} onChange={(e) => set('reactionsEnabled', e.target.checked)} />
+                Allow reactions
+              </label>
+            </div>
+            <div className="field">
+              <label className="settings-check">
+                <input type="checkbox" checked={settings.signaturesEnabled} onChange={(e) => set('signaturesEnabled', e.target.checked)} />
+                Allow signatures
+              </label>
+            </div>
+            <div className="field">
+              <label htmlFor="boards-signatureMaxLength">Longest signature (characters)</label>
+              <input id="boards-signatureMaxLength" type="number" min={0} value={settings.signatureMaxLength} onChange={(e) => set('signatureMaxLength', Number(e.target.value))} />
+            </div>
           </div>
-          <div className="card" style={{ padding: '1.25rem' }}>
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.9375rem' }}>Posting rules</h3>
-        <div className="settings-field" style={rowStyle}><label>Minimum account age to post (days, 0 = off)</label><input type="number" style={inputStyle} value={settings.minAccountAgeDays} onChange={(e) => set('minAccountAgeDays', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>First-post moderation threshold (0 = off)</label><input type="number" style={inputStyle} value={settings.firstPostCount} onChange={(e) => set('firstPostCount', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>First-post account age window (days)</label><input type="number" style={inputStyle} value={settings.firstPostAccountAgeDays} onChange={(e) => set('firstPostAccountAgeDays', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>Post cooldown (seconds)</label><input type="number" style={inputStyle} value={settings.postCooldownSeconds} onChange={(e) => set('postCooldownSeconds', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>Posts per hour limit</label><input type="number" style={inputStyle} value={settings.postsPerHourLimit} onChange={(e) => set('postsPerHourLimit', Number(e.target.value))} /></div>
-        <div className="settings-field" style={rowStyle}><label>Edit window (minutes, 0 = unlimited)</label><input type="number" style={inputStyle} value={settings.editWindowMinutes} onChange={(e) => set('editWindowMinutes', Number(e.target.value))} /></div>
+          <div className="card">
+            <div className="card-title">RSS</div>
+            <div className="field field--beside-input">
+              <label className="settings-check">
+                <input type="checkbox" checked={settings.rssEnabled} onChange={(e) => set('rssEnabled', e.target.checked)} />
+                Publish RSS feeds
+              </label>
+            </div>
+            <div className="field">
+              <label htmlFor="boards-feedTitle">Feed title</label>
+              <input id="boards-feedTitle" value={settings.feedTitle ?? ''} onChange={(e) => set('feedTitle', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label htmlFor="boards-feedDescription">Feed description</label>
+              <input id="boards-feedDescription" value={settings.feedDescription ?? ''} onChange={(e) => set('feedDescription', e.target.value || null)} />
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-title">Posting rules</div>
+            <div className="field">
+              <label htmlFor="boards-minAccountAgeDays">Account must be this old to post (days)</label>
+              <input id="boards-minAccountAgeDays" type="number" min={0} value={settings.minAccountAgeDays} onChange={(e) => set('minAccountAgeDays', Number(e.target.value))} />
+              <span className="field-hint">0 lets anyone post straight away.</span>
+            </div>
+            <div className="field">
+              <label htmlFor="boards-postCooldownSeconds">Wait between posts (seconds)</label>
+              <input id="boards-postCooldownSeconds" type="number" min={0} value={settings.postCooldownSeconds} onChange={(e) => set('postCooldownSeconds', Number(e.target.value))} />
+            </div>
+            <div className="field">
+              <label htmlFor="boards-firstPostCount">Hold the first posts for checking</label>
+              <input id="boards-firstPostCount" type="number" min={0} value={settings.firstPostCount} onChange={(e) => set('firstPostCount', Number(e.target.value))} />
+              <span className="field-hint">How many of a new member’s posts wait for a moderator. 0 to switch off.</span>
+            </div>
+            <div className="field">
+              <label htmlFor="boards-firstPostAccountAgeDays">…for accounts younger than (days)</label>
+              <input id="boards-firstPostAccountAgeDays" type="number" min={0} value={settings.firstPostAccountAgeDays} onChange={(e) => set('firstPostAccountAgeDays', Number(e.target.value))} />
+            </div>
+            <div className="field">
+              <label htmlFor="boards-postsPerHourLimit">Most posts an hour</label>
+              <input id="boards-postsPerHourLimit" type="number" min={0} value={settings.postsPerHourLimit} onChange={(e) => set('postsPerHourLimit', Number(e.target.value))} />
+            </div>
+            <div className="field">
+              <label htmlFor="boards-editWindowMinutes">Editing allowed for (minutes)</label>
+              <input id="boards-editWindowMinutes" type="number" min={0} value={settings.editWindowMinutes} onChange={(e) => set('editWindowMinutes', Number(e.target.value))} />
+              <span className="field-hint">0 lets posts be edited at any time.</span>
+            </div>
           </div>
         </div>
       )}
 
       {sub === 'import' && (
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <h3 style={{ margin: '0 0 1rem', fontSize: '0.9375rem' }}>Import</h3>
+        <div className="settings-cols">
           <ImportWizard />
         </div>
       )}
