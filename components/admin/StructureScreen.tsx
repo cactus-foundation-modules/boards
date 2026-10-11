@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { TabStrip } from '@/components/admin/TabStrip'
+import { useAdminConfirm } from '@/components/admin/useAdminConfirm'
 import { useTabParam } from '@/modules/boards/lib/admin-tab-url'
 
 type Category = { id: string; title: string; position: number }
@@ -43,6 +44,7 @@ function RenameField({ value, onSave }: { value: string; onSave: (value: string)
 }
 
 export default function StructureScreen() {
+  const [askConfirm, confirmNode] = useAdminConfirm()
   const [tab, setTab] = useTabParam('tab', 'Boards' as typeof SUB_TABS[number], SUB_TABS)
   const [categories, setCategories] = useState<Category[]>([])
   const [boards, setBoards] = useState<Board[]>([])
@@ -102,7 +104,7 @@ export default function StructureScreen() {
     const res = await fetch(`/api/m/boards/admin/boards/${id}`, { method: 'DELETE' })
     if (res.status === 409) {
       const data = await res.json()
-      if (!confirm(`This board has ${data.threads} thread(s) and ${data.posts} post(s). Delete anyway?`)) return
+      if (!(await askConfirm({ title: 'Delete this board anyway?', message: `It has ${data.threads} thread${data.threads === 1 ? '' : 's'} and ${data.posts} post${data.posts === 1 ? '' : 's'}, and they all go with it.` }))) return
       await fetch(`/api/m/boards/admin/boards/${id}?confirm=1`, { method: 'DELETE' })
     }
     loadAll()
@@ -166,6 +168,7 @@ export default function StructureScreen() {
 
   return (
     <div>
+      {confirmNode}
       <TabStrip
         items={SUB_TABS.map((t) => ({ key: t, label: t, active: tab === t, onClick: () => setTab(t) }))}
       />
